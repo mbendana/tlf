@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    tools {
+        maven 'Maven 3.8.6'
+    }
+    environment {
+        GITHUB_API_URL='https://api.GitHub.com/repos/mbendana/example-voting-app'
+    }
+    stages {
+        stage('build') {
+            when {
+                changeset '**/worker/**'
+            }
+            steps {
+                echo 'Compiling worker app'
+                dir('worker') {
+                    sh 'mvn compile'
+                }
+            }
+        }
+        stage('test') {
+            when {
+                changeset '**/worker/**'
+            }
+            steps {
+                echo 'Running unit test on worker app'
+                dir('worker') {
+                    sh 'mvn clean test'
+                }
+            }
+        }
+        stage("package") {
+            when {
+                branch 'master'
+                changeset '**/worker/**'
+            }
+            steps {
+                echo 'Packaging worker app'
+                dir('worker') {
+                    sh 'mvn package -DskipTests'
+                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline for worker app has finished.'
+        }
+        success {
+            echo 'Pipeline was successful.'
+						slackSend (color: "good", channel: "instavote-cd", message: "Build Succeeded - ${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+        failure {
+            echo 'Pipeline failed.'
+						slackSend (color: "danger", channel: "instavote-cd", message: "Build Failed - ${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+    }
+}

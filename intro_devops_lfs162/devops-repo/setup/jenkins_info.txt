@@ -1,0 +1,10 @@
+41-jenkins_1  | *************************************************************
+42-jenkins_1  |
+43:jenkins_1  | Jenkins initial setup is required. An admin user has been created and a password generated.
+44-jenkins_1  | Please use the following password to proceed to installation:
+45-jenkins_1  |
+46-jenkins_1  | af73e949519147d19cdc3c78e75c53b9
+47-jenkins_1  |
+48:jenkins_1  | This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+49-jenkins_1  |
+50-jenkins_1  | *************************************************************
